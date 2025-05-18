@@ -4838,21 +4838,31 @@
         
         // 初始化采样方法UI
         function initSamplingMethodUI() {
+            const samplingMethod = document.getElementById('sampling-method');
+            if (!samplingMethod) return;
+            
             const method = samplingMethod.value;
             
+            // 获取参数卡片元素
+            const topPCard = document.getElementById('top-p-card');
+            const topKCard = document.getElementById('top-k-card');
+            
+            // 如果元素不存在，直接返回
+            if (!topPCard || !topKCard) return;
+            
             // 隐藏所有参数卡片
-            document.getElementById('top-p-card').style.display = 'none';
-            document.getElementById('top-k-card').style.display = 'none';
+            topPCard.style.display = 'none';
+            topKCard.style.display = 'none';
             
             // 根据所选方法显示对应参数
             if (method === 'temperature') {
                 // 仅显示温度，其他参数隐藏
             } else if (method === 'nucleus') {
                 // 显示Top P
-                document.getElementById('top-p-card').style.display = 'block';
+                topPCard.style.display = 'block';
             } else if (method === 'topk') {
                 // 显示Top K
-                document.getElementById('top-k-card').style.display = 'block';
+                topKCard.style.display = 'block';
             }
         }
         
@@ -4869,37 +4879,62 @@
             });
         }
         
-        // 设置所有滑块的值显示更新
-        setupSliderValueDisplay(temperatureRange, temperatureValue);
-        setupSliderValueDisplay(topPRange, topPValue);
-        setupSliderValueDisplay(topKRange, topKValue);
-        setupSliderValueDisplay(repetitionPenaltyRange, repetitionPenaltyValue);
-        setupSliderValueDisplay(document.getElementById('frequency-penalty-range'), document.getElementById('frequency-penalty-value'));
-        setupSliderValueDisplay(document.getElementById('presence-penalty-range'), document.getElementById('presence-penalty-value'));
-        setupSliderValueDisplay(document.getElementById('min-tokens-range'), document.getElementById('min-tokens-value'));
-        setupSliderValueDisplay(maxTokensRange, maxTokensValue);
-        setupSliderValueDisplay(fontSizeRange, fontSizeValue);
-        setupSliderValueDisplay(chatWidthRange, chatWidthValue, '%');
-        setupSliderValueDisplay(streamSpeedRange, streamSpeedValue);
-        
         // 给滑块添加渐变背景色，让滑块更直观
         function updateSliderBackground(slider) {
+            if (!slider) return;
             const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
             slider.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${value}%, #ddd ${value}%, #ddd 100%)`;
         }
-        
-        // 为所有滑块添加背景更新
-        document.querySelectorAll('.styled-slider').forEach(slider => {
-            updateSliderBackground(slider);
-            slider.addEventListener('input', function() {
-                updateSliderBackground(this);
+
+        // 初始化滑块控件函数
+        function initializeSliders() {
+            // 设置所有滑块的值显示更新
+            if (temperatureRange && temperatureValue) 
+                setupSliderValueDisplay(temperatureRange, temperatureValue);
+            if (topPRange && topPValue)
+                setupSliderValueDisplay(topPRange, topPValue);
+            if (topKRange && topKValue)
+                setupSliderValueDisplay(topKRange, topKValue);
+            if (repetitionPenaltyRange && repetitionPenaltyValue)
+                setupSliderValueDisplay(repetitionPenaltyRange, repetitionPenaltyValue);
+                
+            const frequencyPenaltyRange = document.getElementById('frequency-penalty-range');
+            const frequencyPenaltyValue = document.getElementById('frequency-penalty-value');
+            if (frequencyPenaltyRange && frequencyPenaltyValue)
+                setupSliderValueDisplay(frequencyPenaltyRange, frequencyPenaltyValue);
+                
+            const presencePenaltyRange = document.getElementById('presence-penalty-range');
+            const presencePenaltyValue = document.getElementById('presence-penalty-value');
+            if (presencePenaltyRange && presencePenaltyValue)
+                setupSliderValueDisplay(presencePenaltyRange, presencePenaltyValue);
+                
+            const minTokensRange = document.getElementById('min-tokens-range');
+            const minTokensValue = document.getElementById('min-tokens-value');
+            if (minTokensRange && minTokensValue)
+                setupSliderValueDisplay(minTokensRange, minTokensValue);
+                
+            if (maxTokensRange && maxTokensValue)
+                setupSliderValueDisplay(maxTokensRange, maxTokensValue);
+            if (fontSizeRange && fontSizeValue)
+                setupSliderValueDisplay(fontSizeRange, fontSizeValue);
+            if (chatWidthRange && chatWidthValue)
+                setupSliderValueDisplay(chatWidthRange, chatWidthValue, '%');
+            if (streamSpeedRange && streamSpeedValue)
+                setupSliderValueDisplay(streamSpeedRange, streamSpeedValue);
+            
+            // 为所有滑块添加背景更新
+            document.querySelectorAll('.styled-slider').forEach(slider => {
+                updateSliderBackground(slider);
+                slider.addEventListener('input', function() {
+                    updateSliderBackground(this);
+                });
             });
-        });
+        }
         
-        // 系统提示词预设切换
-        const systemPromptPreset = document.getElementById('system-prompt-preset');
-        const systemPromptInput = document.getElementById('system-prompt-input');
-        const savePromptPreset = document.getElementById('save-prompt-preset');
+        // 在DOMContentLoaded事件中初始化滑块
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSliders();
+        });
         
         // 预设提示词
         const promptPresets = {
@@ -4911,31 +4946,40 @@
             custom: localStorage.getItem('customSystemPrompt') || ""
         };
         
-        // 切换预设
-        systemPromptPreset.addEventListener('change', function() {
-            const preset = this.value;
-            if (preset !== 'custom') {
-                systemPromptInput.value = promptPresets[preset];
-                savePromptPreset.style.display = 'block';
-            } else {
-                const customPrompt = localStorage.getItem('customSystemPrompt');
-                if (customPrompt) {
-                    systemPromptInput.value = customPrompt;
+        // 初始化系统提示词相关功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const systemPromptPreset = document.getElementById('system-prompt-preset');
+            const systemPromptInput = document.getElementById('system-prompt-input');
+            const savePromptPreset = document.getElementById('save-prompt-preset');
+            
+            if (!systemPromptPreset || !systemPromptInput || !savePromptPreset) return;
+            
+            // 切换预设
+            systemPromptPreset.addEventListener('change', function() {
+                const preset = this.value;
+                if (preset !== 'custom') {
+                    systemPromptInput.value = promptPresets[preset];
+                    savePromptPreset.style.display = 'block';
+                } else {
+                    const customPrompt = localStorage.getItem('customSystemPrompt');
+                    if (customPrompt) {
+                        systemPromptInput.value = customPrompt;
+                    }
+                    savePromptPreset.style.display = 'block';
                 }
-                savePromptPreset.style.display = 'block';
-            }
-            saveSettings();
-        });
-        
-        // 保存自定义提示词
-        savePromptPreset.addEventListener('click', function() {
-            const currentPrompt = systemPromptInput.value.trim();
-            if (currentPrompt) {
-                localStorage.setItem('customSystemPrompt', currentPrompt);
-                promptPresets.custom = currentPrompt;
-                systemPromptPreset.value = 'custom';
-                showNotification('自定义提示词已保存');
-            }
+                saveSettings();
+            });
+            
+            // 保存自定义提示词
+            savePromptPreset.addEventListener('click', function() {
+                const currentPrompt = systemPromptInput.value.trim();
+                if (currentPrompt) {
+                    localStorage.setItem('customSystemPrompt', currentPrompt);
+                    promptPresets.custom = currentPrompt;
+                    systemPromptPreset.value = 'custom';
+                    showNotification('自定义提示词已保存');
+                }
+            });
         });
         
         // 初始化所有生成设置的UI
@@ -4943,7 +4987,10 @@
             // 初始化采样方法UI
             initSamplingMethodUI();
             
-            // 初始化所有滑块的背景
+            // 初始化所有滑块
+            initializeSliders();
+            
+            // 更新所有滑块的背景
             document.querySelectorAll('.styled-slider').forEach(slider => {
                 updateSliderBackground(slider);
             });
@@ -4961,9 +5008,14 @@
         });
 
         // 采样方法设置事件监听
-        samplingMethod.addEventListener('change', function() {
-            settings.samplingMethod = this.value;
-            saveSettings();
+        document.addEventListener('DOMContentLoaded', function() {
+            const samplingMethod = document.getElementById('sampling-method');
+            if (samplingMethod) {
+                samplingMethod.addEventListener('change', function() {
+                    settings.samplingMethod = this.value;
+                    saveSettings();
+                });
+            }
         });
         
         // 保存所有设置到本地存储
@@ -5027,23 +5079,57 @@
         
         // 将设置应用到UI
         function applySettingsToUI() {
+            // 获取所有需要的DOM元素
+            const temperatureRange = document.getElementById('temperature-range');
+            const temperatureValue = document.getElementById('temperature-value');
+            const topPRange = document.getElementById('top-p-range');
+            const topPValue = document.getElementById('top-p-value');
+            const topKRange = document.getElementById('top-k-range');
+            const topKValue = document.getElementById('top-k-value');
+            const maxTokensRange = document.getElementById('max-tokens-range');
+            const maxTokensValue = document.getElementById('max-tokens-value');
+            const streamToggle = document.getElementById('stream-toggle');
+            const samplingMethod = document.getElementById('sampling-method');
+            const repetitionPenaltyRange = document.getElementById('repetition-penalty-range');
+            const repetitionPenaltyValue = document.getElementById('repetition-penalty-value');
+            const fontSizeRange = document.getElementById('font-size-range');
+            const fontSizeValue = document.getElementById('font-size-value');
+            const chatWidthRange = document.getElementById('chat-width-range');
+            const chatWidthValue = document.getElementById('chat-width-value');
+            const chatStyleSelect = document.getElementById('chat-style-select');
+            const imageQualitySelect = document.getElementById('image-quality-select');
+            const autoScrollToggle = document.getElementById('auto-scroll-toggle');
+            const soundToggle = document.getElementById('sound-toggle');
+            const timestampToggle = document.getElementById('timestamp-toggle');
+            const toggleThemeBtn = document.getElementById('theme-toggle');
+            
             // 应用基本设置
-            temperatureRange.value = settings.temperature;
-            temperatureValue.textContent = settings.temperature;
+            if (temperatureRange) {
+                temperatureRange.value = settings.temperature;
+                if (temperatureValue) temperatureValue.textContent = settings.temperature;
+            }
             
-            topPRange.value = settings.topP;
-            topPValue.textContent = settings.topP;
+            if (topPRange) {
+                topPRange.value = settings.topP;
+                if (topPValue) topPValue.textContent = settings.topP;
+            }
             
-            topKRange.value = settings.topK || 40;
-            topKValue.textContent = settings.topK || 40;
+            if (topKRange) {
+                topKRange.value = settings.topK || 40;
+                if (topKValue) topKValue.textContent = settings.topK || 40;
+            }
             
-            maxTokensRange.value = settings.maxTokens;
-            maxTokensValue.textContent = settings.maxTokens;
+            if (maxTokensRange) {
+                maxTokensRange.value = settings.maxTokens;
+                if (maxTokensValue) maxTokensValue.textContent = settings.maxTokens;
+            }
             
-            streamToggle.checked = settings.stream;
+            if (streamToggle) {
+                streamToggle.checked = settings.stream;
+            }
             
             // 采样方法设置
-            if (settings.samplingMethod) {
+            if (samplingMethod && settings.samplingMethod) {
                 samplingMethod.value = settings.samplingMethod;
             }
             
@@ -5051,42 +5137,52 @@
             initSamplingMethodUI();
             
             // 重复惩罚和频率惩罚
-            if (settings.repetitionPenalty) {
+            if (repetitionPenaltyRange && settings.repetitionPenalty) {
                 repetitionPenaltyRange.value = settings.repetitionPenalty;
-                repetitionPenaltyValue.textContent = settings.repetitionPenalty;
+                if (repetitionPenaltyValue) repetitionPenaltyValue.textContent = settings.repetitionPenalty;
             }
             
-            if (settings.frequencyPenalty) {
-                document.getElementById('frequency-penalty-range').value = settings.frequencyPenalty;
-                document.getElementById('frequency-penalty-value').textContent = settings.frequencyPenalty;
+            const frequencyPenaltyRange = document.getElementById('frequency-penalty-range');
+            const frequencyPenaltyValue = document.getElementById('frequency-penalty-value');
+            if (frequencyPenaltyRange && frequencyPenaltyValue && settings.frequencyPenalty) {
+                frequencyPenaltyRange.value = settings.frequencyPenalty;
+                frequencyPenaltyValue.textContent = settings.frequencyPenalty;
             }
             
-            if (settings.presencePenalty) {
-                document.getElementById('presence-penalty-range').value = settings.presencePenalty;
-                document.getElementById('presence-penalty-value').textContent = settings.presencePenalty;
+            const presencePenaltyRange = document.getElementById('presence-penalty-range');
+            const presencePenaltyValue = document.getElementById('presence-penalty-value');
+            if (presencePenaltyRange && presencePenaltyValue && settings.presencePenalty) {
+                presencePenaltyRange.value = settings.presencePenalty;
+                presencePenaltyValue.textContent = settings.presencePenalty;
             }
             
             // 系统提示词设置
+            const systemPromptInput = document.getElementById('system-prompt-input');
+            const systemPromptPreset = document.getElementById('system-prompt-preset');
             const savedSystemPrompt = settings.systemPrompt;
-            if (savedSystemPrompt) {
+            
+            if (systemPromptInput && savedSystemPrompt) {
                 systemPromptInput.value = savedSystemPrompt;
                 
-                // 检查是否与预设匹配
-                let matchedPreset = null;
-                for (const [preset, text] of Object.entries(promptPresets)) {
-                    if (text === savedSystemPrompt) {
-                        matchedPreset = preset;
-                        break;
+                // 如果预设选择器存在
+                if (systemPromptPreset) {
+                    // 检查是否与预设匹配
+                    let matchedPreset = null;
+                    for (const [preset, text] of Object.entries(promptPresets)) {
+                        if (text === savedSystemPrompt) {
+                            matchedPreset = preset;
+                            break;
+                        }
                     }
-                }
-                
-                if (matchedPreset) {
-                    systemPromptPreset.value = matchedPreset;
-                } else {
-                    // 如果不匹配任何预设，设为自定义
-                    systemPromptPreset.value = 'custom';
-                    promptPresets.custom = savedSystemPrompt;
-                    localStorage.setItem('customSystemPrompt', savedSystemPrompt);
+                    
+                    if (matchedPreset) {
+                        systemPromptPreset.value = matchedPreset;
+                    } else {
+                        // 如果不匹配任何预设，设为自定义
+                        systemPromptPreset.value = 'custom';
+                        promptPresets.custom = savedSystemPrompt;
+                        localStorage.setItem('customSystemPrompt', savedSystemPrompt);
+                    }
                 }
             }
             
@@ -5096,37 +5192,42 @@
             });
             
             // 应用UI设置
-            if (settings.fontSize) {
+            if (fontSizeRange && settings.fontSize) {
                 fontSizeRange.value = settings.fontSize;
-                fontSizeValue.textContent = settings.fontSize;
+                if (fontSizeValue) fontSizeValue.textContent = settings.fontSize;
                 applyFontSize();
             }
             
-            if (settings.chatWidth) {
+            if (chatWidthRange && settings.chatWidth) {
                 chatWidthRange.value = settings.chatWidth;
-                chatWidthValue.textContent = `${settings.chatWidth}%`;
+                if (chatWidthValue) chatWidthValue.textContent = `${settings.chatWidth}%`;
                 applyChatWidth();
             }
             
-            if (settings.chatStyle !== undefined) {
+            if (chatStyleSelect && settings.chatStyle !== undefined) {
                 chatStyleSelect.value = settings.chatStyle;
                 applyChatStyle();
             }
             
-            if (settings.imageQuality) {
+            if (imageQualitySelect && settings.imageQuality) {
                 imageQualitySelect.value = settings.imageQuality;
             }
             
-            autoScrollToggle.checked = settings.autoScroll !== false;
-            soundToggle.checked = settings.soundEnabled === true;
-            timestampToggle.checked = settings.showTimestamp === true;
-            toggleThemeBtn.checked = settings.darkMode === true;
+            if (autoScrollToggle) autoScrollToggle.checked = settings.autoScroll !== false;
+            if (soundToggle) soundToggle.checked = settings.soundEnabled === true;
+            if (timestampToggle) timestampToggle.checked = settings.showTimestamp === true;
+            if (toggleThemeBtn) toggleThemeBtn.checked = settings.darkMode === true;
         }
         
         // 为systemPromptInput添加事件监听器，以保存系统提示词
-        systemPromptInput.addEventListener('change', function() {
-            settings.systemPrompt = this.value.trim();
-            saveSettings();
+        document.addEventListener('DOMContentLoaded', function() {
+            const systemPromptInput = document.getElementById('system-prompt-input');
+            if (systemPromptInput) {
+                systemPromptInput.addEventListener('change', function() {
+                    settings.systemPrompt = this.value.trim();
+                    saveSettings();
+                });
+            }
         });
         
         // 更新请求参数，处理采样方法和其他生成设置
