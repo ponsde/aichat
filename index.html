@@ -805,6 +805,7 @@
         input[type="range"] {
             flex: 1;
             -webkit-appearance: none;
+            appearance: none;
             height: 5px;
             background: var(--border-color);
             border-radius: 5px;
@@ -1248,6 +1249,7 @@
         .slider-with-value input[type="range"] {
             flex: 1;
             -webkit-appearance: none;
+            appearance: none;
             height: 6px;
             background: var(--border-color);
             border-radius: 3px;
@@ -1619,6 +1621,7 @@
         
         .styled-slider {
             -webkit-appearance: none;
+            appearance: none;
             width: 100%;
             height: 6px;
             background: linear-gradient(to right, var(--primary-color), var(--primary-color));
@@ -1817,25 +1820,25 @@
                     <!-- 系统提示词设置 -->
                     <div class="settings-item prompt-settings-item">
                         <div class="settings-item-header">
-                            <label for="system-prompt">系统提示词</label>
+                        <label for="system-prompt">系统提示词</label>
                             <div class="settings-item-controls">
                                 <select id="system-prompt-preset" class="styled-select">
-                                    <option value="default" selected>默认</option>
-                                    <option value="creative">创意写作</option>
-                                    <option value="concise">简洁精确</option>
-                                    <option value="helpful">助手模式</option>
-                                    <option value="chat">对话模式</option>
-                                    <option value="custom">自定义</option>
-                                </select>
-                                <button id="save-prompt-preset" class="icon-btn" title="保存当前提示词为自定义">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </div>
+                                <option value="default" selected>默认</option>
+                                <option value="creative">创意写作</option>
+                                <option value="concise">简洁精确</option>
+                                <option value="helpful">助手模式</option>
+                                <option value="chat">对话模式</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                            <button id="save-prompt-preset" class="icon-btn" title="保存当前提示词为自定义">
+                                <i class="fas fa-save"></i>
+                            </button>
                         </div>
-                        
-                        <!-- 提示词编辑框 -->
+                    </div>
+                    
+                    <!-- 提示词编辑框 -->
                         <div class="prompt-editor-container">
-                            <textarea id="system-prompt-input" class="system-prompt-textarea" placeholder="输入系统提示词以控制AI的风格和行为...">请作为一个友好、有帮助的AI助手，提供有用且有见地的回应。尽量给出全面详细的回答，但也保持简洁和相关性。当用户上传图片时，请不仅识别图片中的文字，还应理解用户的真实意图并给出有帮助的回答。比如，如果图片中有编程需求，请提供具体代码实现，而不仅仅是识别出文字。</textarea>
+                        <textarea id="system-prompt-input" class="system-prompt-textarea" placeholder="输入系统提示词以控制AI的风格和行为...">请作为一个友好、有帮助的AI助手，提供有用且有见地的回应。尽量给出全面详细的回答，但也保持简洁和相关性。当用户上传图片时，请不仅识别图片中的文字，还应理解用户的真实意图并给出有帮助的回答。比如，如果图片中有编程需求，请提供具体代码实现，而不仅仅是识别出文字。</textarea>
                             <div class="prompt-info">
                                 <i class="fas fa-lightbulb info-icon"></i>
                                 <span>系统提示词可以指导AI的回复方式和风格，例如设定角色、风格或行为准则</span>
@@ -1846,39 +1849,39 @@
                     <!-- 生成参数区域 -->
                     <div class="generation-parameters-container">
                         <div class="parameters-grid">
-                            <!-- 对话设置 -->
+                    <!-- 对话设置 -->
                             <div class="parameter-card">
                                 <div class="parameter-header">
                                     <i class="fas fa-comments parameter-icon"></i>
-                                    <label for="include-names">添加名称前缀</label>
+                        <label for="include-names">添加名称前缀</label>
                                 </div>
                                 <div class="parameter-content">
                                     <select id="include-names" class="styled-select">
-                                        <option value="never">从不</option>
-                                        <option value="user-only">仅用户名</option>
-                                        <option value="always" selected>始终</option>
-                                    </select>
+                            <option value="never">从不</option>
+                            <option value="user-only">仅用户名</option>
+                            <option value="always" selected>始终</option>
+                        </select>
                                     <div class="parameter-description">
-                                        在消息前添加名称前缀（例如"用户："和"Gemini："）
+                            在消息前添加名称前缀（例如"用户："和"Gemini："）
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <!-- 采样方法 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 采样方法 -->
                             <div class="parameter-card">
                                 <div class="parameter-header">
                                     <i class="fas fa-random parameter-icon"></i>
-                                    <label for="sampling-method">采样方法</label>
+                        <label for="sampling-method">采样方法</label>
                                 </div>
                                 <div class="parameter-content">
                                     <select id="sampling-method" class="styled-select">
-                                        <option value="temperature" selected>Temperature</option>
-                                        <option value="nucleus">Nucleus (Top P)</option>
-                                        <option value="topk">Top K</option>
-                                    </select>
+                            <option value="temperature" selected>Temperature</option>
+                            <option value="nucleus">Nucleus (Top P)</option>
+                            <option value="topk">Top K</option>
+                        </select>
                                 </div>
-                            </div>
-                            
+                    </div>
+                    
                             <!-- 图片质量设置 -->
                             <div class="parameter-card">
                                 <div class="parameter-header">
@@ -1900,13 +1903,13 @@
                         
                         <!-- 滑块控制区域 -->
                         <div class="sliders-container">
-                            <!-- 温度设置 -->
+                    <!-- 温度设置 -->
                             <div class="slider-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-thermometer-half slider-icon"></i>
-                                        <label for="temperature-range">温度</label>
-                                    </div>
+                        <label for="temperature-range">温度</label>
+                        </div>
                                     <div class="slider-value-display" id="temperature-value">0.7</div>
                                 </div>
                                 <div class="slider-track-container">
@@ -1918,17 +1921,17 @@
                                     </div>
                                 </div>
                                 <div class="slider-description">
-                                    较低的值使输出更可预测，较高的值使输出更随机
-                                </div>
-                            </div>
-                            
-                            <!-- Top P设置 -->
+                            较低的值使输出更可预测，较高的值使输出更随机
+                        </div>
+                    </div>
+                    
+                    <!-- Top P设置 -->
                             <div class="slider-card" id="top-p-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-percentage slider-icon"></i>
-                                        <label for="top-p-range">Top P</label>
-                                    </div>
+                        <label for="top-p-range">Top P</label>
+                        </div>
                                     <div class="slider-value-display" id="top-p-value">0.95</div>
                                 </div>
                                 <div class="slider-track-container">
@@ -1940,109 +1943,109 @@
                                     </div>
                                 </div>
                                 <div class="slider-description">
-                                    概率阈值，模型只考虑组成此概率的词汇子集
-                                </div>
-                            </div>
-                            
-                            <!-- Top K设置 -->
+                            概率阈值，模型只考虑组成此概率的词汇子集
+                        </div>
+                    </div>
+                    
+                    <!-- Top K设置 -->
                             <div class="slider-card" id="top-k-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-sort-amount-down slider-icon"></i>
-                                        <label for="top-k-range">Top K</label>
-                                    </div>
+                        <label for="top-k-range">Top K</label>
+                        </div>
                                     <div class="slider-value-display" id="top-k-value">40</div>
                                 </div>
                                 <div class="slider-track-container">
                                     <input type="range" id="top-k-range" class="styled-slider" min="1" max="100" step="1" value="40">
                                 </div>
                                 <div class="slider-description">
-                                    限制模型仅考虑可能性最高的前K个词
-                                </div>
-                            </div>
-                            
-                            <!-- 重复惩罚 -->
+                            限制模型仅考虑可能性最高的前K个词
+                        </div>
+                    </div>
+                    
+                    <!-- 重复惩罚 -->
                             <div class="slider-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-redo-alt slider-icon"></i>
-                                        <label for="repetition-penalty-range">重复惩罚</label>
-                                    </div>
+                        <label for="repetition-penalty-range">重复惩罚</label>
+                        </div>
                                     <div class="slider-value-display" id="repetition-penalty-value">1.1</div>
                                 </div>
                                 <div class="slider-track-container">
                                     <input type="range" id="repetition-penalty-range" class="styled-slider" min="1.0" max="2.0" step="0.01" value="1.1">
                                 </div>
                                 <div class="slider-description">
-                                    降低重复相同词语的可能性
-                                </div>
-                            </div>
-                            
-                            <!-- 频率惩罚 -->
+                            降低重复相同词语的可能性
+                        </div>
+                    </div>
+                    
+                    <!-- 频率惩罚 -->
                             <div class="slider-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-chart-line slider-icon"></i>
-                                        <label for="frequency-penalty-range">频率惩罚</label>
-                                    </div>
+                        <label for="frequency-penalty-range">频率惩罚</label>
+                        </div>
                                     <div class="slider-value-display" id="frequency-penalty-value">0.0</div>
                                 </div>
                                 <div class="slider-track-container">
                                     <input type="range" id="frequency-penalty-range" class="styled-slider" min="0.0" max="2.0" step="0.01" value="0.0">
                                 </div>
                                 <div class="slider-description">
-                                    降低模型使用频繁出现词语的概率
-                                </div>
-                            </div>
-                            
-                            <!-- 存在惩罚 -->
+                            降低模型使用频繁出现词语的概率
+                        </div>
+                    </div>
+                    
+                    <!-- 存在惩罚 -->
                             <div class="slider-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-fingerprint slider-icon"></i>
-                                        <label for="presence-penalty-range">存在惩罚</label>
-                                    </div>
+                        <label for="presence-penalty-range">存在惩罚</label>
+                        </div>
                                     <div class="slider-value-display" id="presence-penalty-value">0.0</div>
-                                </div>
+                        </div>
                                 <div class="slider-track-container">
                                     <input type="range" id="presence-penalty-range" class="styled-slider" min="0.0" max="2.0" step="0.01" value="0.0">
-                                </div>
+                    </div>
                                 <div class="slider-description">
                                     降低模型重复使用已出现过词语的概率
-                                </div>
-                            </div>
-                            
+                        </div>
+                    </div>
+                    
                             <!-- 最小长度设置 -->
                             <div class="slider-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-text-height slider-icon"></i>
-                                        <label for="min-tokens-range">最小长度</label>
-                                    </div>
+                        <label for="min-tokens-range">最小长度</label>
+                        </div>
                                     <div class="slider-value-display" id="min-tokens-value">0</div>
                                 </div>
                                 <div class="slider-track-container">
                                     <input type="range" id="min-tokens-range" class="styled-slider" min="10" max="1000" step="10" value="0">
                                 </div>
                                 <div class="slider-description">
-                                    生成回复的最小长度（0表示无限制）
-                                </div>
-                            </div>
-                            
-                            <!-- 最大长度设置 -->
+                            生成回复的最小长度（0表示无限制）
+                        </div>
+                    </div>
+                    
+                    <!-- 最大长度设置 -->
                             <div class="slider-card">
                                 <div class="slider-header">
                                     <div class="slider-title">
                                         <i class="fas fa-text-width slider-icon"></i>
-                                        <label for="max-tokens-range">最大长度</label>
-                                    </div>
+                        <label for="max-tokens-range">最大长度</label>
+                        </div>
                                     <div class="slider-value-display" id="max-tokens-value">1000</div>
                                 </div>
                                 <div class="slider-track-container">
                                     <input type="range" id="max-tokens-range" class="styled-slider" min="100" max="4000" step="50" value="1000">
                                 </div>
                                 <div class="slider-description">
-                                    限制生成回复的最大长度
+                            限制生成回复的最大长度
                                 </div>
                             </div>
                         </div>
@@ -2467,43 +2470,7 @@
             }
         }
         
-        // 保存设置
-        function saveSettings() {
-            // 生成设置
-            settings.model = modelSelect.value || settings.model;
-            settings.temperature = parseFloat(temperatureRange.value);
-            settings.topP = parseFloat(topPRange.value);
-            settings.maxTokens = parseInt(maxTokensRange.value);
-            settings.stream = streamToggle.checked;
-            
-            // 新增设置项
-            settings.topK = parseInt(topKRange.value);
-            settings.repetitionPenalty = parseFloat(repetitionPenaltyRange.value);
-            settings.streamSpeed = parseInt(streamSpeedRange.value);
-            settings.fontSize = parseFloat(fontSizeRange.value);
-            settings.chatWidth = parseInt(chatWidthRange.value);
-            settings.chatStyle = parseInt(chatStyleSelect.value);
-            settings.autoScroll = autoScrollToggle.checked;
-            settings.soundEnabled = soundToggle.checked;
-            settings.showTimestamp = timestampToggle.checked;
-            settings.imageQuality = imageQualitySelect ? imageQualitySelect.value : 'medium';
-            
-            // 保存系统提示词设置
-            settings.systemPrompt = systemPromptInput.value.trim();
-            settings.systemPromptPreset = systemPromptPreset.value;
-            
-            localStorage.setItem('gemini_chat_settings', JSON.stringify(settings));
-            
-            // 更新当前模型显示
-            currentModelText.textContent = settings.model;
-            
-            // 应用设置到UI
-            applyFontSize();
-            applyChatWidth();
-            applyChatStyle();
-            
-            // 不再需要手动保存
-        }
+        // 不再需要这个函数，使用统一的saveSettings函数
         
         // 切换设置侧边栏
         function toggleSettingsSidebar(show = undefined) {
@@ -2710,21 +2677,6 @@
             } catch (error) {
                 console.error('API连接检查错误:', error);
                 updateApiStatus('disconnected', '连接失败');
-            }
-        }
-        
-        // 更新API状态显示
-        function updateApiStatus(status, message) {
-            apiStatus = status;
-            statusText.textContent = message;
-            
-            statusIndicator.className = 'status-indicator';
-            if (status === 'connected') {
-                statusIndicator.classList.add('status-connected');
-            } else if (status === 'checking') {
-                statusIndicator.classList.add('status-checking');
-            } else {
-                statusIndicator.classList.add('status-disconnected');
             }
         }
         
@@ -2965,8 +2917,7 @@
                     role: 'user',
                     content: message,
                     hasImage: hasImage,
-                    imageData: hasImage ? currentUploadedImage : null,
-                    timestamp: new Date().toISOString()
+                    imageData: hasImage ? currentUploadedImage : null
                 });
                 saveConversations();
             }
@@ -3021,10 +2972,10 @@
                     conversation.messages.forEach(msg => {
                         // 对于普通文本消息
                         if (!msg.hasImage) {
-                            messages.push({
-                                role: msg.role,
-                                content: msg.content
-                            });
+                        messages.push({
+                            role: msg.role,
+                            content: msg.content
+                        });
                         } 
                         // 对于含图片的消息，格式化为Gemini multimodal格式
                         else if (msg.hasImage && msg.imageData) {
@@ -3035,6 +2986,12 @@
                                 content.push({ 
                                     type: "text", 
                                     text: msg.content
+                                });
+                            } else {
+                                // 如果没有文本，添加更具体的提示
+                                content.push({ 
+                                    type: "text", 
+                                    text: "请分析这张图片的内容，如果图片中包含文字，请理解这些文字表达的需求并给出相应的回答，而不仅仅是识别出文字。"
                                 });
                             }
                             
@@ -3055,20 +3012,21 @@
                 }
                 
                 // 构建请求体
-                const requestBody = {
+                let requestBody = {
                     model: selectedModel,
                     messages: messages,
                     temperature: settings.temperature,
                     top_p: settings.topP,
-                    top_k: settings.topK,
-                    repetition_penalty: settings.repetitionPenalty,
                     max_tokens: settings.maxTokens,
                     stream: settings.stream
                 };
                 
+                // 根据采样方法和其他设置更新请求体
+                requestBody = updateRequestBody(requestBody);
+                
                 // 使用当前设置中的API URL和密码
-                const apiUrl = settings.apiSettings?.url || INTERNAL_API_URL;
-                const apiPassword = settings.apiSettings?.password || INTERNAL_API_PASSWORD;
+                const apiUrl = settings.apiSettings.url || INTERNAL_API_URL;
+                const apiPassword = settings.apiSettings.password || INTERNAL_API_PASSWORD;
                 
                 // 确定API URL路径
                 const endpoint = `${apiUrl}/v1/chat/completions`;
@@ -3095,129 +3053,241 @@
                     throw new Error(`API返回错误: ${response.status} ${response.statusText}`);
                 }
                 
-                // 处理流式或非流式响应
-                if (settings.stream) {
-                    // 创建新的AI消息
-                    const aiMessageId = `msg-${Date.now()}`;
-                    appendMessage('', 'ai', null, aiMessageId);
+                let responseText = '';
+                
+                // 处理流式响应
+                if (settings.stream && response.body) {
+                    // 创建机器人消息元素
+                    const botMessageElement = document.createElement('div');
+                    botMessageElement.classList.add('bot-message');
+                    botMessageElement.classList.add('chat-message');
+                    botMessageElement.innerHTML = '';
                     
-                    // 开始流式读取
-                    await processStreamResponse(response, aiMessageId);
+                    // 添加头像
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.className = 'message-avatar';
+                    avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
+                    botMessageElement.appendChild(avatarDiv);
+                    
+                    // 添加消息内容
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'message-content';
+                    botMessageElement.appendChild(contentDiv);
+                    
+                    // 添加消息操作按钮
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.classList.add('message-actions');
+                    actionsDiv.innerHTML = '<button class="copy-message" title="复制"><i class="fas fa-copy"></i></button>';
+                    botMessageElement.appendChild(actionsDiv);
+                    
+                    chatContainer.appendChild(botMessageElement);
+                    
+                    // 设置事件监听器
+                    botMessageElement.querySelector('.copy-message').addEventListener('click', function() {
+                        copyMessageText(this);
+                    });
+                    
+                    // 处理流数据
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    
+                    try {
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            
+                            // 解码数据
+                            const chunk = decoder.decode(value, { stream: true });
+                            
+                            // 处理SSE格式的数据
+                            const lines = chunk.split('\n');
+                            for (const line of lines) {
+                                if (line.startsWith('data:')) {
+                                    let data = line.slice(5).trim();
+                                    
+                                    // 检查是否是 [DONE] 消息
+                                    if (data === '[DONE]') continue;
+                                    
+                                    try {
+                                        // 解析JSON数据
+                                        const jsonData = JSON.parse(data);
+                                        
+                                        // 提取内容
+                                        if (jsonData.choices && 
+                                            jsonData.choices[0] && 
+                                            jsonData.choices[0].delta && 
+                                            jsonData.choices[0].delta.content) {
+                                            const content = jsonData.choices[0].delta.content;
+                                            responseText += content;
+                                            contentDiv.innerHTML = formatMessage(responseText);
+                                            
+                                            // 自动滚动到底部
+                                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                                        }
+                                    } catch (e) {
+                                        console.error('解析流数据错误:', e);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // 检查是否是用户手动中止
+                        if (e.name === 'AbortError') {
+                            console.log('用户中止了回复生成');
+                            // 保存已生成的部分
+                            if (responseText) {
+                                // 在回复末尾添加提示
+                                responseText += '\n\n[回复已被用户中止]';
+                                contentDiv.innerHTML = formatMessage(responseText);
+                            } else {
+                                // 如果没有生成任何内容，则移除消息元素
+                                chatContainer.removeChild(botMessageElement);
+                            }
+                        } else {
+                            throw e; // 重新抛出其他错误
+                        }
+                    }
+                    
+                    // 保存到对话历史
+                    if (responseText && conversation) {
+                        conversation.messages.push({
+                            role: 'assistant',
+                            content: responseText
+                        });
+                        saveConversations();
+                    }
+                    
                 } else {
-                    // 处理普通JSON响应
+                    // 非流式响应
                     const data = await response.json();
-                    if (data.choices && data.choices.length > 0) {
-                        const aiMessage = data.choices[0].message.content;
-                        appendMessage(aiMessage, 'ai', null);
+                    if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+                        responseText = data.choices[0].message.content;
+                        appendMessage(responseText, 'bot');
                         
-                        // 保存到对话记录
+                        // 保存到对话历史
                         if (conversation) {
                             conversation.messages.push({
-                                role: 'ai',
-                                content: aiMessage,
-                                hasImage: false,
-                                timestamp: new Date().toISOString()
+                                role: 'assistant',
+                                content: responseText
                             });
                             saveConversations();
                         }
                     } else {
-                        throw new Error('AI返回了空回复');
+                        throw new Error('API响应格式无效');
                     }
                 }
+                
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log('请求被中止');
-                    appendMessage('（生成已停止）', 'system', null);
-                } else {
-                    console.error('发送消息出错：', error);
-                    appendMessage(`错误: ${error.message}`, 'error', null);
+                // 检查是否是中止错误
+                if (error.name !== 'AbortError') {
+                    console.error('请求错误:', error);
+                    showNotification(`错误: ${error.message}`, true);
                 }
             } finally {
-                // 无论请求成功失败，都启用发送按钮
-                sendButton.disabled = false;
-                
-                // 隐藏输入中指示器和停止生成按钮
+                // 隐藏输入中指示器
                 typingIndicator.style.display = 'none';
+                
+                // 隐藏停止生成按钮
                 stopGenerating.style.display = 'none';
                 
-                // 设置空的abort controller
+                // 清除AbortController
                 abortController = null;
+                
+                // 启用发送按钮
+                sendButton.disabled = false;
+                
+                // 聚焦输入框
+                messageInput.focus();
             }
         }
         
         // 添加消息到聊天
-        function appendMessage(message, sender, imageData = null, messageId = null) {
+        function appendMessage(message, sender, imageData = null) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('chat-message');
-            messageElement.classList.add(`${sender}-message`);
-            
-            // 如果提供了消息ID，设置元素的ID
-            if (messageId) {
-                messageElement.id = messageId;
-            }
+            messageElement.classList.add(sender + '-message');
             
             // 添加头像
             const avatarDiv = document.createElement('div');
             avatarDiv.className = 'message-avatar';
             
-            // 根据发送者设置不同的头像
             if (sender === 'user') {
                 avatarDiv.innerHTML = '<i class="fas fa-user"></i>';
-            } else if (sender === 'ai') {
+            } else {
                 avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
-            } else if (sender === 'system') {
-                avatarDiv.innerHTML = '<i class="fas fa-info-circle"></i>';
-            } else if (sender === 'error') {
-                avatarDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
             }
-            
-            messageElement.appendChild(avatarDiv);
             
             // 添加消息内容
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             
-            // 如果有图片，添加图片
+            // 如果有图片数据，添加图片
             if (imageData) {
-                const imgElement = document.createElement('img');
-                imgElement.src = imageData;
-                imgElement.alt = "上传的图片";
-                imgElement.className = 'message-image';
-                contentDiv.appendChild(imgElement);
+                const imageElement = document.createElement('div');
+                imageElement.className = 'message-image-container';
+                imageElement.innerHTML = `<img src="${imageData}" class="message-image">`;
+                contentDiv.appendChild(imageElement);
+                
+                // 如果还有文本消息，添加到图片下方
+                if (message && message.trim().length > 0) {
+                    const textElement = document.createElement('div');
+                    textElement.className = 'message-text';
+                    textElement.innerHTML = formatMessage(message);
+                    contentDiv.appendChild(textElement);
+                }
+            } else {
+                // 仅文本消息
+            contentDiv.innerHTML = formatMessage(message);
             }
-            
-            // 添加文本内容
-            if (message) {
-                contentDiv.innerHTML += formatMessage(message);
-            }
-            
-            messageElement.appendChild(contentDiv);
             
             // 添加消息操作按钮
             const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'message-actions';
-            actionsDiv.innerHTML = '<button class="copy-message" title="复制"><i class="fas fa-copy"></i></button>';
-            messageElement.appendChild(actionsDiv);
+            actionsDiv.classList.add('message-actions');
             
-            // 添加消息到聊天容器
-            chatContainer.appendChild(messageElement);
-            
-            // 设置复制按钮点击事件
-            messageElement.querySelector('.copy-message').addEventListener('click', function() {
+            // 添加复制按钮
+            const copyBtn = document.createElement('button');
+            copyBtn.innerHTML = '<i class="fas fa-copy" title="复制"></i>';
+            copyBtn.addEventListener('click', function() {
                 copyMessageText(this);
             });
+            actionsDiv.appendChild(copyBtn);
             
-            // 自动滚动到底部
-            if (settings.autoScroll) {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+            // 根据发送者添加不同的按钮
+            if (sender === 'user') {
+                // 用户消息添加编辑和删除按钮
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '<i class="fas fa-edit" title="编辑"></i>';
+                editBtn.addEventListener('click', function() {
+                    editUserMessage(messageElement);
+                });
+                actionsDiv.appendChild(editBtn);
+            } else {
+                // 机器人消息添加重新生成按钮
+                const regenerateBtn = document.createElement('button');
+                regenerateBtn.innerHTML = '<i class="fas fa-redo-alt" title="重新生成"></i>';
+                regenerateBtn.addEventListener('click', function() {
+                    regenerateResponse();
+                });
+                actionsDiv.appendChild(regenerateBtn);
             }
             
-            // 如果是AI回复，播放提示音
-            if (sender === 'ai' && message && settings.soundEnabled) {
-                playMessageSound();
-            }
+            // 添加删除按钮
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '<i class="fas fa-trash" title="删除"></i>';
+            deleteBtn.addEventListener('click', function() {
+                deleteMessage(messageElement, sender);
+            });
+            actionsDiv.appendChild(deleteBtn);
             
-            return messageElement;
+            // 组装消息元素
+            messageElement.appendChild(avatarDiv);
+            messageElement.appendChild(contentDiv);
+            messageElement.appendChild(actionsDiv);
+            
+            chatContainer.appendChild(messageElement);
+            
+            // 滚动到底部
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
         
         // 格式化消息，支持简单的Markdown
@@ -4898,7 +4968,39 @@
         
         // 保存所有设置到本地存储
         function saveSettings() {
+            // 生成设置
+            if (modelSelect) settings.model = modelSelect.value || settings.model;
+            if (temperatureRange) settings.temperature = parseFloat(temperatureRange.value);
+            if (topPRange) settings.topP = parseFloat(topPRange.value);
+            if (maxTokensRange) settings.maxTokens = parseInt(maxTokensRange.value);
+            if (streamToggle) settings.stream = streamToggle.checked;
+            
+            // 新增设置项
+            if (topKRange) settings.topK = parseInt(topKRange.value);
+            if (repetitionPenaltyRange) settings.repetitionPenalty = parseFloat(repetitionPenaltyRange.value);
+            if (streamSpeedRange) settings.streamSpeed = parseInt(streamSpeedRange.value);
+            if (fontSizeRange) settings.fontSize = parseFloat(fontSizeRange.value);
+            if (chatWidthRange) settings.chatWidth = parseInt(chatWidthRange.value);
+            if (chatStyleSelect) settings.chatStyle = parseInt(chatStyleSelect.value);
+            if (autoScrollToggle) settings.autoScroll = autoScrollToggle.checked;
+            if (soundToggle) settings.soundEnabled = soundToggle.checked;
+            if (timestampToggle) settings.showTimestamp = timestampToggle.checked;
+            if (imageQualitySelect) settings.imageQuality = imageQualitySelect.value;
+            
+            // 系统提示词设置
+            if (systemPromptInput) settings.systemPrompt = systemPromptInput.value.trim();
+            if (systemPromptPreset) settings.systemPromptPreset = systemPromptPreset.value;
+            
+            // 保存所有设置到本地存储
             localStorage.setItem('gemini_chat_settings', JSON.stringify(settings));
+            
+            // 更新UI
+            if (currentModelText) currentModelText.textContent = settings.model;
+            
+            // 应用设置到UI
+            applyFontSize();
+            applyChatWidth();
+            applyChatStyle();
         }
         
         // 加载设置函数增强，以支持新的生成设置
@@ -5027,10 +5129,10 @@
             saveSettings();
         });
         
-        // 修改发送消息逻辑，处理采样方法
-        async function sendMessage() {
-            // 更新请求体中的采样方法
-            if (settings.samplingMethod === 'temperature') {
+        // 更新请求参数，处理采样方法和其他生成设置
+        function updateRequestBody(requestBody) {
+            // 根据采样方法更新相应参数
+            if (!settings.samplingMethod || settings.samplingMethod === 'temperature') {
                 requestBody.temperature = settings.temperature;
                 delete requestBody.top_p;
                 delete requestBody.top_k;
@@ -5056,6 +5158,8 @@
             if (settings.presencePenalty) {
                 requestBody.presence_penalty = settings.presencePenalty;
             }
+            
+            return requestBody;
         }
 
         // 显示管理员UI界面
@@ -5216,103 +5320,6 @@
             if (adminSection) {
                 adminSection.style.display = 'none';
             }
-        }
-
-        // 处理流式响应
-        async function processStreamResponse(response, messageId) {
-            const messageElement = document.getElementById(messageId);
-            if (!messageElement) {
-                throw new Error('消息元素未找到');
-            }
-            
-            const contentDiv = messageElement.querySelector('.message-content');
-            if (!contentDiv) {
-                throw new Error('消息内容元素未找到');
-            }
-            
-            let responseText = '';
-            
-            // 处理流数据
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            
-            try {
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    
-                    // 解码数据
-                    const chunk = decoder.decode(value, { stream: true });
-                    
-                    // 处理SSE格式的数据
-                    const lines = chunk.split('\n');
-                    for (const line of lines) {
-                        if (line.startsWith('data:')) {
-                            let data = line.slice(5).trim();
-                            
-                            // 检查是否是 [DONE] 消息
-                            if (data === '[DONE]') continue;
-                            
-                            try {
-                                // 解析JSON数据
-                                const jsonData = JSON.parse(data);
-                                
-                                // 提取内容
-                                if (jsonData.choices && 
-                                    jsonData.choices[0] && 
-                                    jsonData.choices[0].delta && 
-                                    jsonData.choices[0].delta.content) {
-                                    const content = jsonData.choices[0].delta.content;
-                                    responseText += content;
-                                    
-                                    // 使用设置的流速度来控制显示速度
-                                    if (settings.streamSpeed < 90) {
-                                        await new Promise(resolve => setTimeout(resolve, Math.max(5, 100 - settings.streamSpeed)));
-                                    }
-                                    
-                                    contentDiv.innerHTML = formatMessage(responseText);
-                                    
-                                    // 自动滚动到底部
-                                    if (settings.autoScroll) {
-                                        chatContainer.scrollTop = chatContainer.scrollHeight;
-                                    }
-                                }
-                            } catch (e) {
-                                console.error('解析流数据错误:', e);
-                            }
-                        }
-                    }
-                }
-            } catch (e) {
-                // 检查是否是用户手动中止
-                if (e.name === 'AbortError') {
-                    console.log('用户中止了回复生成');
-                    // 保存已生成的部分
-                    if (responseText) {
-                        // 在回复末尾添加提示
-                        responseText += '\n\n[回复已被用户中止]';
-                        contentDiv.innerHTML = formatMessage(responseText);
-                    }
-                } else {
-                    throw e; // 重新抛出其他错误
-                }
-            }
-            
-            // 保存到对话历史
-            if (responseText) {
-                const conversation = getCurrentConversation();
-                if (conversation) {
-                    conversation.messages.push({
-                        role: 'ai',
-                        content: responseText,
-                        hasImage: false,
-                        timestamp: new Date().toISOString()
-                    });
-                    saveConversations();
-                }
-            }
-            
-            return responseText;
         }
     </script>
 </body>
