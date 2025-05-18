@@ -2965,7 +2965,8 @@
                     role: 'user',
                     content: message,
                     hasImage: hasImage,
-                    imageData: hasImage ? currentUploadedImage : null
+                    imageData: hasImage ? currentUploadedImage : null,
+                    timestamp: new Date().toISOString()
                 });
                 saveConversations();
             }
@@ -3020,10 +3021,10 @@
                     conversation.messages.forEach(msg => {
                         // 对于普通文本消息
                         if (!msg.hasImage) {
-                        messages.push({
-                            role: msg.role,
-                            content: msg.content
-                        });
+                            messages.push({
+                                role: msg.role,
+                                content: msg.content
+                            });
                         } 
                         // 对于含图片的消息，格式化为Gemini multimodal格式
                         else if (msg.hasImage && msg.imageData) {
@@ -3034,12 +3035,6 @@
                                 content.push({ 
                                     type: "text", 
                                     text: msg.content
-                                });
-                            } else {
-                                // 如果没有文本，添加更具体的提示
-                                content.push({ 
-                                    type: "text", 
-                                    text: "请分析这张图片的内容，如果图片中包含文字，请理解这些文字表达的需求并给出相应的回答，而不仅仅是识别出文字。"
                                 });
                             }
                             
@@ -3065,13 +3060,15 @@
                     messages: messages,
                     temperature: settings.temperature,
                     top_p: settings.topP,
+                    top_k: settings.topK,
+                    repetition_penalty: settings.repetitionPenalty,
                     max_tokens: settings.maxTokens,
                     stream: settings.stream
                 };
                 
                 // 使用当前设置中的API URL和密码
-                const apiUrl = settings.apiSettings.url || INTERNAL_API_URL;
-                const apiPassword = settings.apiSettings.password || INTERNAL_API_PASSWORD;
+                const apiUrl = settings.apiSettings?.url || INTERNAL_API_URL;
+                const apiPassword = settings.apiSettings?.password || INTERNAL_API_PASSWORD;
                 
                 // 确定API URL路径
                 const endpoint = `${apiUrl}/v1/chat/completions`;
@@ -3098,241 +3095,129 @@
                     throw new Error(`API返回错误: ${response.status} ${response.statusText}`);
                 }
                 
-                let responseText = '';
-                
-                // 处理流式响应
-                if (settings.stream && response.body) {
-                    // 创建机器人消息元素
-                    const botMessageElement = document.createElement('div');
-                    botMessageElement.classList.add('bot-message');
-                    botMessageElement.classList.add('chat-message');
-                    botMessageElement.innerHTML = '';
+                // 处理流式或非流式响应
+                if (settings.stream) {
+                    // 创建新的AI消息
+                    const aiMessageId = `msg-${Date.now()}`;
+                    appendMessage('', 'ai', null, aiMessageId);
                     
-                    // 添加头像
-                    const avatarDiv = document.createElement('div');
-                    avatarDiv.className = 'message-avatar';
-                    avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
-                    botMessageElement.appendChild(avatarDiv);
-                    
-                    // 添加消息内容
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'message-content';
-                    botMessageElement.appendChild(contentDiv);
-                    
-                    // 添加消息操作按钮
-                    const actionsDiv = document.createElement('div');
-                    actionsDiv.classList.add('message-actions');
-                    actionsDiv.innerHTML = '<button class="copy-message" title="复制"><i class="fas fa-copy"></i></button>';
-                    botMessageElement.appendChild(actionsDiv);
-                    
-                    chatContainer.appendChild(botMessageElement);
-                    
-                    // 设置事件监听器
-                    botMessageElement.querySelector('.copy-message').addEventListener('click', function() {
-                        copyMessageText(this);
-                    });
-                    
-                    // 处理流数据
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    
-                    try {
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            if (done) break;
-                            
-                            // 解码数据
-                            const chunk = decoder.decode(value, { stream: true });
-                            
-                            // 处理SSE格式的数据
-                            const lines = chunk.split('\n');
-                            for (const line of lines) {
-                                if (line.startsWith('data:')) {
-                                    let data = line.slice(5).trim();
-                                    
-                                    // 检查是否是 [DONE] 消息
-                                    if (data === '[DONE]') continue;
-                                    
-                                    try {
-                                        // 解析JSON数据
-                                        const jsonData = JSON.parse(data);
-                                        
-                                        // 提取内容
-                                        if (jsonData.choices && 
-                                            jsonData.choices[0] && 
-                                            jsonData.choices[0].delta && 
-                                            jsonData.choices[0].delta.content) {
-                                            const content = jsonData.choices[0].delta.content;
-                                            responseText += content;
-                                            contentDiv.innerHTML = formatMessage(responseText);
-                                            
-                                            // 自动滚动到底部
-                                            chatContainer.scrollTop = chatContainer.scrollHeight;
-                                        }
-                                    } catch (e) {
-                                        console.error('解析流数据错误:', e);
-                                    }
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        // 检查是否是用户手动中止
-                        if (e.name === 'AbortError') {
-                            console.log('用户中止了回复生成');
-                            // 保存已生成的部分
-                            if (responseText) {
-                                // 在回复末尾添加提示
-                                responseText += '\n\n[回复已被用户中止]';
-                                contentDiv.innerHTML = formatMessage(responseText);
-                            } else {
-                                // 如果没有生成任何内容，则移除消息元素
-                                chatContainer.removeChild(botMessageElement);
-                            }
-                        } else {
-                            throw e; // 重新抛出其他错误
-                        }
-                    }
-                    
-                    // 保存到对话历史
-                    if (responseText && conversation) {
-                        conversation.messages.push({
-                            role: 'assistant',
-                            content: responseText
-                        });
-                        saveConversations();
-                    }
-                    
+                    // 开始流式读取
+                    await processStreamResponse(response, aiMessageId);
                 } else {
-                    // 非流式响应
+                    // 处理普通JSON响应
                     const data = await response.json();
-                    if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                        responseText = data.choices[0].message.content;
-                        appendMessage(responseText, 'bot');
+                    if (data.choices && data.choices.length > 0) {
+                        const aiMessage = data.choices[0].message.content;
+                        appendMessage(aiMessage, 'ai', null);
                         
-                        // 保存到对话历史
+                        // 保存到对话记录
                         if (conversation) {
                             conversation.messages.push({
-                                role: 'assistant',
-                                content: responseText
+                                role: 'ai',
+                                content: aiMessage,
+                                hasImage: false,
+                                timestamp: new Date().toISOString()
                             });
                             saveConversations();
                         }
                     } else {
-                        throw new Error('API响应格式无效');
+                        throw new Error('AI返回了空回复');
                     }
                 }
-                
             } catch (error) {
-                // 检查是否是中止错误
-                if (error.name !== 'AbortError') {
-                    console.error('请求错误:', error);
-                    showNotification(`错误: ${error.message}`, true);
+                if (error.name === 'AbortError') {
+                    console.log('请求被中止');
+                    appendMessage('（生成已停止）', 'system', null);
+                } else {
+                    console.error('发送消息出错：', error);
+                    appendMessage(`错误: ${error.message}`, 'error', null);
                 }
             } finally {
-                // 隐藏输入中指示器
-                typingIndicator.style.display = 'none';
-                
-                // 隐藏停止生成按钮
-                stopGenerating.style.display = 'none';
-                
-                // 清除AbortController
-                abortController = null;
-                
-                // 启用发送按钮
+                // 无论请求成功失败，都启用发送按钮
                 sendButton.disabled = false;
                 
-                // 聚焦输入框
-                messageInput.focus();
+                // 隐藏输入中指示器和停止生成按钮
+                typingIndicator.style.display = 'none';
+                stopGenerating.style.display = 'none';
+                
+                // 设置空的abort controller
+                abortController = null;
             }
         }
         
         // 添加消息到聊天
-        function appendMessage(message, sender, imageData = null) {
+        function appendMessage(message, sender, imageData = null, messageId = null) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('chat-message');
-            messageElement.classList.add(sender + '-message');
+            messageElement.classList.add(`${sender}-message`);
+            
+            // 如果提供了消息ID，设置元素的ID
+            if (messageId) {
+                messageElement.id = messageId;
+            }
             
             // 添加头像
             const avatarDiv = document.createElement('div');
             avatarDiv.className = 'message-avatar';
             
+            // 根据发送者设置不同的头像
             if (sender === 'user') {
                 avatarDiv.innerHTML = '<i class="fas fa-user"></i>';
-            } else {
+            } else if (sender === 'ai') {
                 avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
+            } else if (sender === 'system') {
+                avatarDiv.innerHTML = '<i class="fas fa-info-circle"></i>';
+            } else if (sender === 'error') {
+                avatarDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
             }
+            
+            messageElement.appendChild(avatarDiv);
             
             // 添加消息内容
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             
-            // 如果有图片数据，添加图片
+            // 如果有图片，添加图片
             if (imageData) {
-                const imageElement = document.createElement('div');
-                imageElement.className = 'message-image-container';
-                imageElement.innerHTML = `<img src="${imageData}" class="message-image">`;
-                contentDiv.appendChild(imageElement);
-                
-                // 如果还有文本消息，添加到图片下方
-                if (message && message.trim().length > 0) {
-                    const textElement = document.createElement('div');
-                    textElement.className = 'message-text';
-                    textElement.innerHTML = formatMessage(message);
-                    contentDiv.appendChild(textElement);
-                }
-            } else {
-                // 仅文本消息
-            contentDiv.innerHTML = formatMessage(message);
+                const imgElement = document.createElement('img');
+                imgElement.src = imageData;
+                imgElement.alt = "上传的图片";
+                imgElement.className = 'message-image';
+                contentDiv.appendChild(imgElement);
             }
+            
+            // 添加文本内容
+            if (message) {
+                contentDiv.innerHTML += formatMessage(message);
+            }
+            
+            messageElement.appendChild(contentDiv);
             
             // 添加消息操作按钮
             const actionsDiv = document.createElement('div');
-            actionsDiv.classList.add('message-actions');
-            
-            // 添加复制按钮
-            const copyBtn = document.createElement('button');
-            copyBtn.innerHTML = '<i class="fas fa-copy" title="复制"></i>';
-            copyBtn.addEventListener('click', function() {
-                copyMessageText(this);
-            });
-            actionsDiv.appendChild(copyBtn);
-            
-            // 根据发送者添加不同的按钮
-            if (sender === 'user') {
-                // 用户消息添加编辑和删除按钮
-                const editBtn = document.createElement('button');
-                editBtn.innerHTML = '<i class="fas fa-edit" title="编辑"></i>';
-                editBtn.addEventListener('click', function() {
-                    editUserMessage(messageElement);
-                });
-                actionsDiv.appendChild(editBtn);
-            } else {
-                // 机器人消息添加重新生成按钮
-                const regenerateBtn = document.createElement('button');
-                regenerateBtn.innerHTML = '<i class="fas fa-redo-alt" title="重新生成"></i>';
-                regenerateBtn.addEventListener('click', function() {
-                    regenerateResponse();
-                });
-                actionsDiv.appendChild(regenerateBtn);
-            }
-            
-            // 添加删除按钮
-            const deleteBtn = document.createElement('button');
-            deleteBtn.innerHTML = '<i class="fas fa-trash" title="删除"></i>';
-            deleteBtn.addEventListener('click', function() {
-                deleteMessage(messageElement, sender);
-            });
-            actionsDiv.appendChild(deleteBtn);
-            
-            // 组装消息元素
-            messageElement.appendChild(avatarDiv);
-            messageElement.appendChild(contentDiv);
+            actionsDiv.className = 'message-actions';
+            actionsDiv.innerHTML = '<button class="copy-message" title="复制"><i class="fas fa-copy"></i></button>';
             messageElement.appendChild(actionsDiv);
             
+            // 添加消息到聊天容器
             chatContainer.appendChild(messageElement);
             
-            // 滚动到底部
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            // 设置复制按钮点击事件
+            messageElement.querySelector('.copy-message').addEventListener('click', function() {
+                copyMessageText(this);
+            });
+            
+            // 自动滚动到底部
+            if (settings.autoScroll) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // 如果是AI回复，播放提示音
+            if (sender === 'ai' && message && settings.soundEnabled) {
+                playMessageSound();
+            }
+            
+            return messageElement;
         }
         
         // 格式化消息，支持简单的Markdown
@@ -5331,6 +5216,103 @@
             if (adminSection) {
                 adminSection.style.display = 'none';
             }
+        }
+
+        // 处理流式响应
+        async function processStreamResponse(response, messageId) {
+            const messageElement = document.getElementById(messageId);
+            if (!messageElement) {
+                throw new Error('消息元素未找到');
+            }
+            
+            const contentDiv = messageElement.querySelector('.message-content');
+            if (!contentDiv) {
+                throw new Error('消息内容元素未找到');
+            }
+            
+            let responseText = '';
+            
+            // 处理流数据
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    // 解码数据
+                    const chunk = decoder.decode(value, { stream: true });
+                    
+                    // 处理SSE格式的数据
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data:')) {
+                            let data = line.slice(5).trim();
+                            
+                            // 检查是否是 [DONE] 消息
+                            if (data === '[DONE]') continue;
+                            
+                            try {
+                                // 解析JSON数据
+                                const jsonData = JSON.parse(data);
+                                
+                                // 提取内容
+                                if (jsonData.choices && 
+                                    jsonData.choices[0] && 
+                                    jsonData.choices[0].delta && 
+                                    jsonData.choices[0].delta.content) {
+                                    const content = jsonData.choices[0].delta.content;
+                                    responseText += content;
+                                    
+                                    // 使用设置的流速度来控制显示速度
+                                    if (settings.streamSpeed < 90) {
+                                        await new Promise(resolve => setTimeout(resolve, Math.max(5, 100 - settings.streamSpeed)));
+                                    }
+                                    
+                                    contentDiv.innerHTML = formatMessage(responseText);
+                                    
+                                    // 自动滚动到底部
+                                    if (settings.autoScroll) {
+                                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('解析流数据错误:', e);
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                // 检查是否是用户手动中止
+                if (e.name === 'AbortError') {
+                    console.log('用户中止了回复生成');
+                    // 保存已生成的部分
+                    if (responseText) {
+                        // 在回复末尾添加提示
+                        responseText += '\n\n[回复已被用户中止]';
+                        contentDiv.innerHTML = formatMessage(responseText);
+                    }
+                } else {
+                    throw e; // 重新抛出其他错误
+                }
+            }
+            
+            // 保存到对话历史
+            if (responseText) {
+                const conversation = getCurrentConversation();
+                if (conversation) {
+                    conversation.messages.push({
+                        role: 'ai',
+                        content: responseText,
+                        hasImage: false,
+                        timestamp: new Date().toISOString()
+                    });
+                    saveConversations();
+                }
+            }
+            
+            return responseText;
         }
     </script>
 </body>
