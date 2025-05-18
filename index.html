@@ -1488,7 +1488,7 @@
                         </button>
                     </div>
                     
-                    <div class="input-container">
+                <div class="input-container">
                         <div class="input-tools">
                             <button id="upload-image-btn" class="icon-btn" title="上传图片">
                                 <i class="fas fa-image"></i>
@@ -1496,9 +1496,9 @@
                             <input type="file" id="image-upload" accept="image/*" style="display: none;">
                         </div>
                         <textarea id="message-input" placeholder="发送消息给 Gemini... (支持粘贴或拖放图片)" rows="1"></textarea>
-                        <button id="send-button">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
+                    <button id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                     </div>
                 </div>
             </div>
@@ -2558,7 +2558,7 @@
     const apiSettingsContent = document.getElementById('api-settings');
     if (apiSettingsContent.classList.contains('show')) {
         apiSettingsContent.style.maxHeight = apiSettingsContent.scrollHeight + "px";
-    }
+            }
             
             showNotification('已更新可用模型列表');
         }
@@ -2655,10 +2655,10 @@
                     conversation.messages.forEach(msg => {
                         // 对于普通文本消息
                         if (!msg.hasImage) {
-                            messages.push({
-                                role: msg.role,
-                                content: msg.content
-                            });
+                        messages.push({
+                            role: msg.role,
+                            content: msg.content
+                        });
                         } 
                         // 对于含图片的消息，格式化为Gemini multimodal格式
                         else if (msg.hasImage && msg.imageData) {
@@ -2913,7 +2913,7 @@
                 }
             } else {
                 // 仅文本消息
-                contentDiv.innerHTML = formatMessage(message);
+            contentDiv.innerHTML = formatMessage(message);
             }
             
             // 添加消息操作按钮
@@ -3559,10 +3559,10 @@
                 conversation.messages.forEach(msg => {
                     // 对于普通文本消息
                     if (!msg.hasImage) {
-                        messages.push({
-                            role: msg.role,
-                            content: msg.content
-                        });
+                    messages.push({
+                        role: msg.role,
+                        content: msg.content
+                    });
                     } 
                     // 对于含图片的消息，格式化为Gemini multimodal格式
                     else if (msg.hasImage && msg.imageData) {
@@ -4120,7 +4120,7 @@
             uploadImageBtn.querySelector('i').classList.remove('fa-check');
             uploadImageBtn.querySelector('i').classList.add('fa-image');
         }
-        
+
         // 关闭设置
         function closeSettings() {
             settingsModal.style.display = 'none';
