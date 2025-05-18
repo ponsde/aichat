@@ -282,6 +282,19 @@
             background-color: #ffbb33;
         }
         
+        /* 管理员模式标识 */
+        .admin-badge {
+            background-color: #ff9800;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 10px;
+            margin-left: 5px;
+            font-weight: bold;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
         /* 聊天区域 */
         .chat-area {
             flex: 1;
@@ -2249,6 +2262,7 @@
         const INTERNAL_API_URL = 'https://ponsde-gemini.hf.space';
         const INTERNAL_API_PASSWORD = '123';
         const VALID_ACCESS_KEYS = ['123', '456', '789', 'gemini', 'admin']; // 多个有效访问密钥
+        const ADMIN_KEY = 'admin'; // 管理员密钥
         
         let settings = {
             model: 'gemini-pro',
@@ -2265,11 +2279,18 @@
             chatWidth: 50,
             chatStyle: 0,
             theme: 'light',
-            showTimestamp: false
+            showTimestamp: false,
+            // 添加API设置，用于管理员模式
+            apiSettings: {
+                url: INTERNAL_API_URL,
+                password: INTERNAL_API_PASSWORD,
+                accessKeys: [...VALID_ACCESS_KEYS]
+            }
             // 移除isAuthenticated属性，不在设置中保存验证状态
         };
         
         let isAuthenticated = false; // 将验证状态改为局部变量，不保存到localStorage
+        let isAdminMode = false; // 管理员模式标志
         let apiStatus = 'disconnected';
         
         // 初始化
@@ -2610,10 +2631,24 @@
             
             updateApiStatus('checking', '正在验证密钥...');
             
-            // 简单的密钥验证
-            if (VALID_ACCESS_KEYS.includes(inputKey)) {
-                // 验证成功
+            // 检查是否是管理员密钥
+            if (inputKey === ADMIN_KEY) {
+                // 管理员密钥验证成功
                 setTimeout(() => {
+                    isAdminMode = true; // 启用管理员模式
+                    isAuthenticated = true;
+                    updateApiStatus('connected', '已连接 (管理员模式)');
+                    showAdminUI(); // 显示管理员UI
+                    showNotification('管理员模式已启用', false);
+                }, 800);
+                return;
+            }
+            
+            // 使用设置中的accessKeys列表进行验证
+            if (settings.apiSettings.accessKeys.includes(inputKey)) {
+                // 普通用户密钥验证成功
+                setTimeout(() => {
+                    isAdminMode = false; // 确保关闭管理员模式
                     updateApiStatus('connected', '已连接');
                     showAuthenticatedUI();
                     showNotification('密钥验证成功，已建立连接');
@@ -2653,8 +2688,11 @@
             updateApiStatus('checking', '正在检查连接...');
             
             try {
+                // 使用当前设置中的API URL
+                const apiUrl = settings.apiSettings.url || INTERNAL_API_URL;
+                
                 // 尝试请求API服务器的根路径
-                const endpoint = `${INTERNAL_API_URL}/`;
+                const endpoint = `${apiUrl}/`;
                 const response = await fetch(endpoint, {
                     method: 'GET',
                     headers: {
@@ -2710,12 +2748,15 @@
                     return;
                 }
                 
+                // 使用当前设置中的API URL
+                const apiUrl = settings.apiSettings.url || INTERNAL_API_URL;
+                
                 // 尝试从标准API获取模型列表
-                let success = await tryFetchModelsFromStandardAPI(INTERNAL_API_URL);
+                let success = await tryFetchModelsFromStandardAPI(apiUrl);
                 
                 // 如果标准API失败，尝试从hajimi后台API获取
                 if (!success) {
-                    success = await tryFetchModelsFromHajimiAPI(INTERNAL_API_URL);
+                    success = await tryFetchModelsFromHajimiAPI(apiUrl);
                 }
                 
                 // 如果两种方法都失败，显示错误
@@ -2737,9 +2778,12 @@
                     'Accept': 'application/json'
                 };
                 
+                // 使用当前设置中的API密码
+                const apiPassword = settings.apiSettings.password || INTERNAL_API_PASSWORD;
+                
                 // 如果有API密码，添加到Headers
-                if (INTERNAL_API_PASSWORD) {
-                    headers['Authorization'] = `Bearer ${INTERNAL_API_PASSWORD}`;
+                if (apiPassword) {
+                    headers['Authorization'] = `Bearer ${apiPassword}`;
                 }
                 
                 console.log('正在从标准API获取模型列表...');
@@ -3025,8 +3069,12 @@
                     stream: settings.stream
                 };
                 
+                // 使用当前设置中的API URL和密码
+                const apiUrl = settings.apiSettings.url || INTERNAL_API_URL;
+                const apiPassword = settings.apiSettings.password || INTERNAL_API_PASSWORD;
+                
                 // 确定API URL路径
-                const endpoint = `${INTERNAL_API_URL}/v1/chat/completions`;
+                const endpoint = `${apiUrl}/v1/chat/completions`;
                 
                 // 设置请求头
                 const headers = {
@@ -3034,8 +3082,8 @@
                 };
                 
                 // 添加API密码到Headers
-                if (INTERNAL_API_PASSWORD) {
-                    headers['Authorization'] = `Bearer ${INTERNAL_API_PASSWORD}`;
+                if (apiPassword) {
+                    headers['Authorization'] = `Bearer ${apiPassword}`;
                 }
                 
                 // 发送请求
@@ -3928,8 +3976,12 @@
                     stream: settings.stream
                 };
                 
+                // 使用当前设置中的API URL和密码
+                const apiUrl = settings.apiSettings.url || INTERNAL_API_URL;
+                const apiPassword = settings.apiSettings.password || INTERNAL_API_PASSWORD;
+                
                 // 确定API URL路径
-                const endpoint = `${INTERNAL_API_URL}/v1/chat/completions`;
+                const endpoint = `${apiUrl}/v1/chat/completions`;
                 
                 // 设置请求头
                 const headers = {
@@ -3937,8 +3989,8 @@
                 };
                 
                 // 添加API密码到Headers
-                if (INTERNAL_API_PASSWORD) {
-                    headers['Authorization'] = `Bearer ${INTERNAL_API_PASSWORD}`;
+                if (apiPassword) {
+                    headers['Authorization'] = `Bearer ${apiPassword}`;
                 }
                 
                 // 发送请求
@@ -5118,6 +5170,166 @@
             
             if (settings.presencePenalty) {
                 requestBody.presence_penalty = settings.presencePenalty;
+            }
+        }
+
+        // 显示管理员UI界面
+        function showAdminUI() {
+            // 显示通用的已认证UI部分
+            modelSelectionRow.style.display = 'flex';
+            checkConnectionBtn.textContent = '重新验证';
+            
+            // 确保API设置区域展开显示
+            const apiSettingsHeader = document.querySelector('.settings-section-header[data-section="api"]');
+            const apiSettingsContent = document.getElementById('api-settings');
+            
+            apiSettingsHeader.classList.add('active');
+            apiSettingsContent.classList.add('show');
+            apiSettingsContent.style.maxHeight = apiSettingsContent.scrollHeight + "px";
+            
+            // 获取可用模型列表
+            fetchAvailableModels();
+            
+            // 创建管理员设置区域，如果不存在
+            if (!document.getElementById('admin-settings')) {
+                createAdminSettingsSection();
+            }
+            
+            // 显示管理员设置区域
+            const adminSection = document.getElementById('admin-settings-section');
+            if (adminSection) {
+                adminSection.style.display = 'block';
+            }
+
+            // 添加管理员标识到顶部状态栏
+            const statusText = document.getElementById('status-text');
+            if (!document.querySelector('.admin-badge')) {
+                const adminBadge = document.createElement('span');
+                adminBadge.className = 'admin-badge';
+                adminBadge.textContent = '管理员';
+                statusText.parentNode.appendChild(adminBadge);
+            }
+        }
+        
+        // 创建管理员设置区域
+        function createAdminSettingsSection() {
+            const settingsContent = document.querySelector('.settings-content');
+            
+            // 创建管理员设置部分
+            const adminSection = document.createElement('div');
+            adminSection.id = 'admin-settings-section';
+            adminSection.className = 'settings-section';
+            
+            adminSection.innerHTML = `
+                <div class="settings-section-header" data-section="admin">
+                    <span>管理员设置</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="settings-section-content" id="admin-settings">
+                    <!-- API URL设置 -->
+                    <div class="settings-item">
+                        <label for="api-url-input">API URL</label>
+                        <div class="input-with-button">
+                            <input type="text" id="api-url-input" placeholder="API服务器地址" value="${settings.apiSettings.url}">
+                            <button id="save-api-url" class="icon-btn" title="保存API URL">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                        <div class="setting-description">
+                            设置API服务器地址
+                        </div>
+                    </div>
+                    
+                    <!-- API密码设置 -->
+                    <div class="settings-item">
+                        <label for="api-password-input">API 密码</label>
+                        <div class="input-with-button">
+                            <input type="password" id="api-password-input" placeholder="API服务器密码" value="${settings.apiSettings.password}">
+                            <button id="save-api-password" class="icon-btn" title="保存API密码">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                        <div class="setting-description">
+                            设置API服务器访问密码
+                        </div>
+                    </div>
+                    
+                    <!-- 访问密钥管理 -->
+                    <div class="settings-item">
+                        <label for="access-keys-input">访问密钥列表</label>
+                        <div class="input-with-button">
+                            <input type="text" id="access-keys-input" placeholder="以逗号分隔的密钥列表" value="${settings.apiSettings.accessKeys.join(', ')}">
+                            <button id="save-access-keys" class="icon-btn" title="保存访问密钥">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                        <div class="setting-description">
+                            设置允许访问的密钥列表，多个密钥用逗号分隔
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 插入到设置内容的顶部
+            settingsContent.insertBefore(adminSection, settingsContent.firstChild);
+            
+            // 添加事件监听器
+            adminSection.querySelector('.settings-section-header').addEventListener('click', function() {
+                toggleSettingsSection(this);
+            });
+            
+            // 保存API URL
+            document.getElementById('save-api-url').addEventListener('click', function() {
+                const newUrl = document.getElementById('api-url-input').value.trim();
+                if (newUrl) {
+                    settings.apiSettings.url = newUrl;
+                    saveSettings();
+                    showNotification('API URL已更新');
+                }
+            });
+            
+            // 保存API密码
+            document.getElementById('save-api-password').addEventListener('click', function() {
+                const newPassword = document.getElementById('api-password-input').value.trim();
+                if (newPassword) {
+                    settings.apiSettings.password = newPassword;
+                    saveSettings();
+                    showNotification('API密码已更新');
+                }
+            });
+            
+            // 保存访问密钥
+            document.getElementById('save-access-keys').addEventListener('click', function() {
+                const keysInput = document.getElementById('access-keys-input').value;
+                const keysList = keysInput.split(',').map(key => key.trim()).filter(key => key);
+                
+                if (keysList.length > 0) {
+                    settings.apiSettings.accessKeys = keysList;
+                    saveSettings();
+                    showNotification('访问密钥列表已更新');
+                } else {
+                    showNotification('请至少提供一个访问密钥', true);
+                }
+            });
+            
+            // 默认展开管理员设置区域
+            const adminSettingsHeader = adminSection.querySelector('.settings-section-header');
+            toggleSettingsSection(adminSettingsHeader);
+        }
+
+        // 初始化非管理员模式
+        function initNormalMode() {
+            isAdminMode = false;
+            
+            // 移除管理员标识和设置区域
+            const adminBadge = document.querySelector('.admin-badge');
+            if (adminBadge) {
+                adminBadge.remove();
+            }
+            
+            const adminSection = document.getElementById('admin-settings-section');
+            if (adminSection) {
+                adminSection.style.display = 'none';
             }
         }
     </script>
